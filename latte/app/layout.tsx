@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "splt.js | Lightweight text splitting library",
-  description: "Split text for high-end web animations with zero dependencies.",
-  generator: "v0.app",
+  title: "Latte | Modern Crypto-Native Package Manager",
+  description: "The package manager that works like npm but empowers creators with direct crypto donations.",
+
 }
 
 export default function RootLayout({
