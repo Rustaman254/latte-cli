@@ -1,501 +1,152 @@
 # ☕ Latte Package Manager
 
-A modern CLI package manager that works like npm with pnpm-style UX, featuring **optional cryptocurrency donations** on the Mantle network.
+Latte is a modern CLI package manager designed to feel familiar yet fresh. It combines the reliability of npm with the polished user experience of pnpm, and introduces a unique way to support open source: **direct cryptocurrency donations** on the Mantle network.
 
-## 🌟 Features
+Whether you're a developer who wants to support your favorite packages or a maintainer looking for a new revenue stream, Latte makes it seamless.
 
-- **npm-compatible**: Works with the npm registry and existing npm packages
-- **Beautiful CLI**: pnpm-style colored output and progress indicators
-- **Lock file**: Human-readable `latte-lock.json` for dependency management
-- **Crypto donations**: Optional or required payments via Mantle network stablecoins
-- **Blockchain verified**: On-chain transaction verification
-- **Package.json compatible**: Standard npm package.json format
+## Why Latte?
 
-## 📦 Project Structure
+- **Familiar**: If you know npm, you know Latte. It works with the same registry and `package.json` format.
+- **Beautiful**: We believe dev tools should look good. Enjoy pnpm-style colored output and smooth progress indicators.
+- **Transparent**: Our human-readable `latte-lock.json` makes dependency management clear and audit-friendly.
+- **Sustain Open Source**: Optional or required payments via Mantle network stablecoins unlock new ways to fund development.
+- **Verified**: Every transaction is verified on-chain, ensuring funds go exactly where they should.
 
-```
-Latte/
-├── latte-cli/          # CLI package manager
-│   ├── src/
-│   │   ├── index.ts           # Main CLI entry point
-│   │   ├── installer.ts       # Package installation logic
-│   │   ├── lockfile.ts        # Lock file management
-│   │   ├── package-manager.ts # package.json operations
-│   │   ├── payment.ts         # Mantle network payments
-│   │   ├── output.ts          # Formatted console output
-│   │   └── prompt.ts          # User input handling
-│   └── package.json
-│
-└── latte-api/          # Backend API
-    ├── src/
-    │   ├── index.ts           # API server
-    │   ├── database.ts        # SQLite database
-    │   └── blockchain.ts      # Mantle blockchain integration
-    └── package.json
-```
-
-## 🚀 Quick Start
+## Getting Started
 
 ### Installation
 
-#### CLI Setup
+You can set up the CLI and API separately. Here is how to get the CLI running on your machine:
 
 ```bash
 cd latte-cli
 npm install
 npm run build
-
-# Link globally (optional)
 npm link
 ```
 
-#### API Setup
+For the backend API, which handles the blockchain verification:
 
 ```bash
 cd latte-api
 npm install
-
-# Configure environment
 cp .env.example .env
-# Edit .env with your settings
-
 npm run build
 ```
 
-### Running the API
+Then simply start the API server:
 
 ```bash
 cd latte-api
 npm run dev
 ```
 
-The API will start on `http://localhost:4000`
+The API will be available at `http://localhost:4000`.
 
-## 📖 CLI Usage
+## Using the CLI
 
 ### Initialize a Project
+
+Start a new project in your current directory. This will guide you through creating a `package.json`.
 
 ```bash
 latte init
 ```
 
-Creates a `package.json` in the current directory.
+### Adding Packages
 
-### Add Packages
+Add a package to your project just like you would with other managers. Latte will automatically check if the package has any donation preferences.
 
 ```bash
-# Add a package
 latte add express
+```
 
-# Add to devDependencies
+Need it for development only?
+
+```bash
 latte add -D typescript
+```
 
-# Specify user ID for payment tracking
+If you want to track payments or donations for your user account:
+
+```bash
 latte add lodash --user user@example.com
 ```
 
-This will:
-1. Check for payment requirements
-2. Show QR code if payment needed
-3. Install the package from npm
-4. Update `package.json`
-5. Update `latte-lock.json`
+**What happens next?**
+Latte checks the package rules. If there's a donation option (or requirement), you'll see a QR code right in your terminal.
+1. Scan it with your wallet.
+2. Once the payment is confirmed on-chain, the installation proceeds automatically.
+3. Your `package.json` and `latte-lock.json` are updated.
 
-### Install All Dependencies
+### Installing Dependencies
+
+When you pull a project, install everything listed in `package.json` with one command:
 
 ```bash
 latte install
-# or
-latte i
 ```
 
-Installs all dependencies from `package.json`.
+### Managing Packages
 
-### Remove Packages
+Remove what you don't need:
 
 ```bash
 latte remove express
-# or
-latte rm express
 ```
 
-### List Installed Packages
+See what you have installed:
 
 ```bash
 latte list
-# or
-latte ls
 ```
 
-### Set Package Donation Rules
+### Setting Up Donations (For Maintainers)
+
+If you maintain a package, you can set up donation rules. You can ask for a specific amount in USDT on the Mantle network.
 
 ```bash
-latte set-price <package> \
+latte set-price my-package \
   --price 5 \
   --wallet 0xYourWalletAddress \
-  --token USDT \
-  --chain Mantle \
-  --required  # Optional: make payment mandatory
-```
-
-Example:
-
-```bash
-latte set-price my-awesome-package \
-  --price 2.5 \
-  --wallet 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb \
   --token USDT \
   --chain Mantle
 ```
 
-## 🔐 Payment Flow
-
-### Optional Donation
-
-When a package has an optional donation:
-
-1. User runs `latte add package-name`
-2. CLI shows donation information and QR code
-3. User can scan to donate (optional)
-4. Package installs regardless
-
-### Required Payment
-
-When a package requires payment:
-
-1. User runs `latte add package-name`
-2. CLI shows payment information and QR code
-3. User must scan and pay
-4. CLI waits for payment confirmation (60s)
-5. Package installs after payment confirmed
-
-## 🗂️ Lock File Format
-
-The `latte-lock.json` file is human-readable and tracks all dependencies:
-
-```json
-{
-  "lockfileVersion": "1.0",
-  "packages": {
-    "express@4.18.2": {
-      "version": "4.18.2",
-      "resolved": "https://registry.npmjs.org/express/-/express-4.18.2.tgz",
-      "integrity": "sha512-...",
-      "dependencies": {
-        "accepts": "~1.3.8",
-        "array-flatten": "1.1.1"
-      }
-    }
-  }
-}
-```
-
-## 🌐 API Endpoints
-
-### Package Rules
-
-#### Get Package Rules
-```http
-GET /packages/:name/rules
-```
-
-Response:
-```json
-{
-  "price": 5.0,
-  "required": false,
-  "walletAddress": "0x...",
-  "chain": "Mantle",
-  "tokenSymbol": "USDT"
-}
-```
-
-#### Set Package Rules
-```http
-POST /packages
-Content-Type: application/json
-
-{
-  "name": "package-name",
-  "price": 5.0,
-  "required": false,
-  "walletAddress": "0x...",
-  "chain": "Mantle",
-  "tokenSymbol": "USDT"
-}
-```
-
-#### List All Packages
-```http
-GET /packages
-```
-
-### Payments
-
-#### Check Payment Status
-```http
-GET /payments/status?pkg=package-name&userId=user@example.com
-```
-
-Response:
-```json
-{
-  "paid": true
-}
-```
-
-#### Verify Blockchain Transaction
-```http
-POST /payments/verify
-Content-Type: application/json
-
-{
-  "pkg": "package-name",
-  "userId": "user@example.com",
-  "txHash": "0x..."
-}
-```
-
-#### Manual Payment Confirmation (Testing)
-```http
-POST /payments/mark-paid
-Content-Type: application/json
-
-{
-  "pkg": "package-name",
-  "userId": "user@example.com",
-  "amount": 5.0,
-  "txHash": "0x..."
-}
-```
-
-### Statistics
-
-#### Get Donation History
-```http
-GET /packages/:name/donations
-```
-
-#### Get Platform Stats
-```http
-GET /stats
-```
-
-## ⛓️ Mantle Network Integration
-
-### Supported Networks
-
-- **Mainnet**: Chain ID 5000
-- **Testnet**: Chain ID 5001
-
-### Supported Tokens
-
-- **USDT**: Tether USD
-- **USDC**: USD Coin
-- **MNT**: Native Mantle token
-
-### Configuration
-
-Edit `latte-api/.env`:
-
-```env
-MANTLE_CHAIN_ID=5000
-MANTLE_RPC_URL=https://rpc.mantle.xyz
-```
-
-For testnet:
-```env
-MANTLE_CHAIN_ID=5001
-MANTLE_RPC_URL=https://rpc.testnet.mantle.xyz
-```
-
-## 🧪 Testing
-
-### Test the CLI
+You can even make the payment mandatory if you wish:
 
 ```bash
-# Create a test directory
-mkdir test-project
-cd test-project
-
-# Initialize
-latte init
-
-# Add a package
-latte add lodash
-
-# Check files created
-ls -la
-# Should see: package.json, latte-lock.json, node_modules/
-
-# List packages
-latte list
-
-# Remove package
-latte remove lodash
+latte set-price my-package --price 10 --wallet 0x... --required
 ```
 
-### Test Payment Flow
+## How It Works
 
-```bash
-# Set up a test package with donation
-latte set-price test-package \
-  --price 1 \
-  --wallet 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb \
-  --chain Mantle \
-  --token USDT
+### The Lock File
+We use `latte-lock.json` to keep track of exactly what version of each package is installed. Unlike some other lock files, ours is designed to be easy for humans to read and understand.
 
-# Try installing (will show QR code)
-latte add test-package --user test@example.com
-```
+### Blockchain Integration
+Latte integrates directly with the Mantle network. It supports both Mainnet (Chain ID 5000) and Testnet (Chain ID 5001). We currently support USDT, USDC, and native MNT tokens.
 
-### Test API
+When a payment is made, the Latte API listens for the transaction on the blockchain. Once verified, it signals the CLI to proceed with the installation.
 
-```bash
-# Start the API
-cd latte-api
-npm run dev
+## API Reference
 
-# In another terminal, test endpoints
-curl http://localhost:4000/
+The backend API is simple and RESTful.
 
-# Get package rules
-curl http://localhost:4000/packages/express/rules
+- **GET** `/packages/:name/rules` - See donation rules for a package.
+- **POST** `/packages` - Set rules for your package.
+- **GET** `/payments/status` - Check if a payment has gone through.
+- **POST** `/payments/verify` - Verify a transaction hash.
+- **GET** `/stats` - See platform-wide statistics.
 
-# Set package price
-curl -X POST http://localhost:4000/packages \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "my-package",
-    "price": 5,
-    "walletAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-    "chain": "Mantle",
-    "tokenSymbol": "USDT"
-  }'
+## Contributing
 
-# Check payment status
-curl "http://localhost:4000/payments/status?pkg=my-package&userId=user@example.com"
+We love contributions! Whether it's adding support for more networks, improving the CLI output, or fixing bugs, please feel free to open a Pull Request.
 
-# Get stats
-curl http://localhost:4000/stats
-```
-
-## 🎨 CLI Output Examples
-
-### Adding a Package
-
-```
-🎯 Adding express
-
-ℹ Found express@4.18.2
-⠹ Installing express@4.18.2...
-✓ Installed express@4.18.2
-✓ Added express@4.18.2 to dependencies
-
-✨ express has been added to your project!
-```
-
-### With Optional Donation
-
-```
-💝 Optional Donation
-
-The package express accepts donations of 2.5 USDT
-You can skip this and install anyway.
-
-Scan to donate:
-
-█████████████████████████████
-█████████████████████████████
-```
-
-### With Required Payment
-
-```
-💰 Payment Required
-
-Package: express
-Amount: 5 USDT
-Network: Mantle
-Address: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
-
-Scan this QR code with your wallet:
-
-█████████████████████████████
-█████████████████████████████
-
-ℹ Waiting for payment confirmation (up to 60 seconds)...
-```
-
-## 🛠️ Development
-
-### CLI Development
-
-```bash
-cd latte-cli
-npm run start  # Run with ts-node
-npm run build  # Build TypeScript
-```
-
-### API Development
-
-```bash
-cd latte-api
-npm run dev    # Run with ts-node (auto-reload)
-npm run build  # Build TypeScript
-npm start      # Run built version
-```
-
-## 📝 Environment Variables
-
-### CLI
-
-```bash
-# API endpoint
-export LATTE_API_BASE=http://localhost:4000
-```
-
-### API
-
-See `.env.example` for all available options.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
+## License
 
 ISC
 
-## 🔗 Links
-
-- [Mantle Network](https://www.mantle.xyz/)
-- [npm Registry](https://www.npmjs.com/)
-- [pnpm](https://pnpm.io/)
-
-## ⚠️ Important Notes
-
-1. **Token Addresses**: The Mantle network token addresses in the code are examples. Update them with actual contract addresses for production use.
-
-2. **Security**: Never commit `.env` files with sensitive information. Always use `.env.example` as a template.
-
-3. **Testing**: Always test payment flows on testnet before using mainnet.
-
-4. **Lock File**: Commit `latte-lock.json` to version control to ensure consistent installations across environments.
-
-5. **Database**: The SQLite database (`latte.db`) stores all package rules and payment records. Back it up regularly in production.
-
-## 🎯 Roadmap
-
-- [ ] Add support for more blockchain networks
-- [ ] Implement caching for faster installations
-- [ ] Add workspace support (monorepos)
-- [ ] Create web dashboard for package statistics
-- [ ] Add automatic transaction verification
-- [ ] Support for multiple payment methods
-- [ ] Package signing and verification
-- [ ] Offline mode support
-
 ---
 
-Made with ☕ and ❤️
+*Made with ☕ and ❤️ for the Open Source community.*
